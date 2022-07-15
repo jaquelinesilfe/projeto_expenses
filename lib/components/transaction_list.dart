@@ -15,37 +15,44 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 430,
-      child: transactions.isEmpty
-          ? Column(
-              children: [
-                const SizedBox(height: 18),
-                Text(
-                  'Nenhuma Transação Cadastrada!',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  height: 200,
-                  child: Image.asset(
-                    'assets/images/waiting.png',
-                    fit: BoxFit.cover,
+    return transactions.isEmpty
+        ? LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: constraints.maxHeight * 0.05,
                   ),
-                ),
-              ],
-            )
-          : ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (ctx, index) {
-                final tr = transactions[index];
-                return Card(
-                  elevation: 5,
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 5,
+                  SizedBox(
+                    width: constraints.maxWidth * 0.3,
+                    child: Text(
+                      'Nenhuma Transação Cadastrada!',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
                   ),
-                  child: ListTile(
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  SizedBox(
+                    height: constraints.maxHeight * 0.6,
+                    child: Image.asset(
+                      'assets/images/waiting.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        : ListView.builder(
+            itemCount: transactions.length,
+            itemBuilder: (ctx, index) {
+              final tr = transactions[index];
+              return Card(
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 5,
+                ),
+                child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.purple,
                       radius: 30,
@@ -68,15 +75,24 @@ class TransactionList extends StatelessWidget {
                     subtitle: Text(
                       DateFormat('d MMM y').format(tr.date),
                     ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      color: Theme.of(context).errorColor,
-                      onPressed: () => onRemove(tr.id),
-                    ),
-                  ),
-                );
-              },
-            ),
-    );
+                    trailing: MediaQuery.of(context).size.width > 480
+                        ? TextButton.icon(
+                            onPressed: () => onRemove(tr.id),
+                            icon: Icon(Icons.delete,
+                                color: Theme.of(context).errorColor),
+                            label: Text(
+                              'Excluir',
+                              style: TextStyle(
+                                  color: Theme.of(context).errorColor),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.delete),
+                            color: Theme.of(context).errorColor,
+                            onPressed: () => onRemove(tr.id),
+                          )),
+              );
+            },
+          );
   }
 }
